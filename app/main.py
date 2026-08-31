@@ -37,7 +37,12 @@ def geocode(q: str):
     items = r.json()
     if not items:
         return None
-    it = items[0]
+    # 地理院APIは住所特化で、施設名(「東京駅」等)だと先頭が別地方の類似住所になることがある
+    # (実測: 東京駅→北海道札幌市東区)。クエリ文字列を含む候補を優先する。
+    def score(it):
+        t = it.get("properties", {}).get("title", "")
+        return (q in t, t.startswith(q), -len(t))
+    it = max(items, key=score)
     lon, lat = it["geometry"]["coordinates"]
     return {"lat": lat, "lon": lon, "label": it.get("properties", {}).get("title", q)}
 
