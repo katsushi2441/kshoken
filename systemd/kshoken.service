@@ -3,6 +3,7 @@ Description=Kurage 商圏分析 (kshoken) :18355
 After=network-online.target docker.service
 
 [Service]
+EnvironmentFile=%h/kshoken/.env
 WorkingDirectory=/home/kojima/work/kshoken
 ExecStart=/home/kojima/work/kshoken/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 18355
 Restart=always

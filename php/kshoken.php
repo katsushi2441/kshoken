@@ -2,7 +2,11 @@
 // Kurage 商圏分析 (kshoken) — kurage.exbridge.jp 上の公開入口。
 // 自宅サーバー :18355 への透過プロキシ。UIは相対パス(api/...)なので
 // /kshoken.php/ (末尾スラッシュ) を起点に PATH_INFO で中継する。
-$BACKEND = 'http://exbridge.ddns.net:18355';
+// バックエンドURLは同ディレクトリの kshoken_config.php で定義する(リポジトリには含めない)
+//   <?php define('KSHOKEN_BACKEND', 'http://あなたのサーバー:18355');
+$__cfg = __DIR__ . '/kshoken_config.php';
+if (is_file($__cfg)) { require_once $__cfg; }
+$BACKEND = defined('KSHOKEN_BACKEND') ? KSHOKEN_BACKEND : 'http://127.0.0.1:18355';
 
 // /kshoken.php → /kshoken.php/ へ(相対URL解決のため)
 if (!isset($_SERVER['PATH_INFO']) || $_SERVER['PATH_INFO'] === '') {
