@@ -1,0 +1,99 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kurage 商圏分析 — 住所を入れると徒歩圏の人口・世帯・事業所が出ます</title>
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<style>
+:root{--ink:#132329;--muted:#5a6a72;--line:#dbe5e8;--blue:#007f96;--paper:#f4f7f7}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,"Segoe UI","Noto Sans JP",sans-serif;color:var(--ink);background:var(--paper)}
+header{background:#10242b;color:#fff;padding:12px 18px}
+header h1{font-size:16px;margin:0}header p{margin:4px 0 0;font-size:12px;color:#9fb3ba}
+.bar{display:flex;gap:8px;flex-wrap:wrap;padding:10px 14px;background:#fff;border-bottom:1px solid var(--line)}
+.bar input[type=text]{flex:1 1 240px;min-width:0;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px}
+.bar select,.bar button{padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:#fff}
+.bar button{background:var(--blue);color:#fff;border-color:var(--blue);font-weight:700;min-width:88px}
+.wrap{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr)}
+.wrap>*{min-width:0}
+#panel{padding:14px;overflow-y:auto;max-height:calc(100vh - 128px)}
+#map{height:calc(100vh - 128px)}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.big{font-size:30px;font-weight:800}.unit{font-size:13px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{border-bottom:1px solid var(--line);padding:6px 4px;text-align:left}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+.note{font-size:11.5px;color:var(--muted);line-height:1.7}
+.method{font-size:12px;color:var(--muted)}
+#status{padding:8px 14px;font-size:13px;color:var(--muted)}
+.bar100{height:10px;border-radius:5px;background:#e5edef;overflow:hidden;display:flex}
+.bar100 i{display:block;height:100%}
+@media(max-width:760px){.wrap{grid-template-columns:1fr}#map{height:45vh}#panel{max-height:none}}
+</style></head><body>
+<header><h1>Kurage 商圏分析</h1>
+<p>住所を入れると、徒歩/車N分圏の人口・年齢構成・世帯数・事業所数が出ます（国勢調査500mメッシュ・無料）</p></header>
+<div class="bar">
+<input id="q" type="text" placeholder="例: 名古屋市瑞穂区内浜町" value="">
+<select id="mode"><option value="walk">徒歩</option><option value="drive">車</option></select>
+<select id="min"><option>5</option><option selected>10</option><option>15</option><option>20</option><option>30</option></select><span style="align-self:center;font-size:13px">分</span>
+<button id="go">分析</button>
+</div>
+<div id="status"></div>
+<div class="wrap">
+<div id="panel">
+<div class="card note">左の欄に住所や施設名を入れて「分析」を押してください。出典: 2020年国勢調査・2021年経済センサス活動調査（e-Stat 地域メッシュ統計）を当社が加工。到達圏は道路網（OpenStreetMap）に基づく計算です。</div>
+</div>
+<div id="map"></div>
+</div>
+<script>
+const map=new maplibregl.Map({container:'map',center:[136.9,35.15],zoom:11,style:{version:8,
+ sources:{gsi:{type:'raster',tiles:['https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png'],tileSize:256,attribution:'地図: 国土地理院タイル / 統計: e-Stat（国勢調査・経済センサス）'}},
+ layers:[{id:'gsi',type:'raster',source:'gsi'}]}});
+map.addControl(new maplibregl.NavigationControl());
+let marker=null;
+function fmt(n){return n==null?'—':Number(n).toLocaleString('ja-JP')}
+async function run(){
+ const q=document.getElementById('q').value.trim(); if(!q)return;
+ const min=document.getElementById('min').value, mode=document.getElementById('mode').value;
+ const st=document.getElementById('status'); st.textContent='計算中…（初回は数秒かかります）';
+ document.getElementById('go').disabled=true;
+ try{
+  const r=await fetch(`api/analyze?q=${encodeURIComponent(q)}&minutes=${min}&mode=${mode}`);
+  const d=await r.json();
+  if(!r.ok){st.textContent=d.detail||'エラー';return}
+  st.textContent='';
+  const p=d.population||{},b=d.business||{};
+  const total=p.pop||0;
+  const seg=(v,c)=>`<i style="width:${total?(100*v/total):0}%;background:${c}"></i>`;
+  document.getElementById('panel').innerHTML=`
+   <div class="card"><div class="unit">${d.point.label} ／ ${mode==='walk'?'徒歩':'車'}${d.minutes}分圏</div>
+    <div class="big">${fmt(p.pop)}<span class="unit"> 人</span></div>
+    <div class="unit">世帯 ${fmt(p.households)} ／ 事業所 ${fmt(b.offices)} ／ 従業者 ${fmt(b.employees)}</div>
+    <div class="method">${d.method}</div></div>
+   <div class="card"><b style="font-size:13px">年齢構成</b>
+    <div class="bar100" style="margin:8px 0 4px">${seg(p.age0_14||0,'#57b8d0')}${seg(p.age15_64||0,'#007f96')}${seg(p.age65||0,'#c17a00')}</div>
+    <table>
+     <tr><td>0〜14歳</td><td class="num">${fmt(p.age0_14)}人</td><td class="num">${total?Math.round(100*(p.age0_14||0)/total):0}%</td></tr>
+     <tr><td>15〜64歳</td><td class="num">${fmt(p.age15_64)}人</td><td class="num">${total?Math.round(100*(p.age15_64||0)/total):0}%</td></tr>
+     <tr><td>65歳以上</td><td class="num">${fmt(p.age65)}人</td><td class="num">${total?Math.round(100*(p.age65||0)/total):0}%</td></tr>
+     <tr><td>　うち75歳以上</td><td class="num">${fmt(p.age75)}人</td><td class="num">${total?Math.round(100*(p.age75||0)/total):0}%</td></tr>
+    </table></div>
+   <div class="card note">対象メッシュ ${fmt(p.mesh_count)}区画。境界上のメッシュは商圏と重なる面積の割合で按分しています。秘匿処理された小規模メッシュは含まれない場合があります。<br>
+   出典: ${d.source}<br>この仕組みはオープンソースの組み合わせ（MapLibre / Valhalla / PostGIS）で、<a href="https://katsushi2441.github.io/vwork/blog/2026-09-01-shoken-bunseki-qgis-free.html" target="_blank" rel="noopener">作り方を記事で公開しています</a>。自社データと重ねた仕組み化は<a href="https://kurage.exbridge.jp/vibe-prototype.html?ref=kshoken" target="_blank" rel="noopener">バイブプロトタイピング</a>へ。</div>`;
+  // 地図描画
+  for(const id of['iso-fill','iso-line','mesh-fill'])if(map.getLayer(id))map.removeLayer(id);
+  for(const id of['iso','mesh'])if(map.getSource(id))map.removeSource(id);
+  map.addSource('mesh',{type:'geojson',data:{type:'FeatureCollection',features:(d.meshes||[]).map(m=>({type:'Feature',geometry:m.c,properties:{p:m.p||0}}))}});
+  map.addLayer({id:'mesh-fill',type:'fill',source:'mesh',paint:{'fill-color':['interpolate',['linear'],['get','p'],0,'#f2f7f8',200,'#bfe0e8',800,'#57b8d0',2000,'#007f96',4000,'#0a4a5a'],'fill-opacity':0.55}});
+  map.addSource('iso',{type:'geojson',data:{type:'Feature',geometry:d.isochrone}});
+  map.addLayer({id:'iso-fill',type:'fill',source:'iso',paint:{'fill-color':'#c17a00','fill-opacity':0.08}});
+  map.addLayer({id:'iso-line',type:'line',source:'iso',paint:{'line-color':'#c17a00','line-width':2.5}});
+  if(marker)marker.remove();
+  marker=new maplibregl.Marker().setLngLat([d.point.lon,d.point.lat]).addTo(map);
+  const c=d.isochrone.coordinates.flat(d.isochrone.type==='MultiPolygon'?2:1);
+  const lons=c.map(x=>x[0]),lats=c.map(x=>x[1]);
+  map.fitBounds([[Math.min(...lons),Math.min(...lats)],[Math.max(...lons),Math.max(...lats)]],{padding:40});
+ }catch(e){st.textContent='通信エラー: '+e.message}
+ finally{document.getElementById('go').disabled=false}
+}
+document.getElementById('go').onclick=run;
+document.getElementById('q').addEventListener('keydown',e=>{if(e.key==='Enter')run()});
+</script></body></html>
