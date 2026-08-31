@@ -70,14 +70,12 @@ def load_biz():
         text = z.read(name).decode('cp932', 'replace')
     h1 = text.split('\r\n')[0].split(',')
     h2 = text.split('\r\n')[1].split(',')
-    idx_office = idx_emp = None
-    for i, label in enumerate(h2):
-        l = label.strip()
-        if idx_office is None and '事業所数' in l and ('全産業' in l or '総数' in l):
-            idx_office = i
-        elif idx_office is not None and idx_emp is None and '従業者数' in l and ('全産業' in l or '総数' in l):
-            idx_emp = i
-    print(f'T001162 列判定: 事業所数={idx_office}({h2[idx_office].strip()[:24]}) 従業者数={idx_emp}')
+    # T001162のヘッダーは産業名だけで「事業所数/従業者数」の語が無い。
+    # 実測(2026-09-01): 「Ａ～Ｓ全産業」が列1(事業所数ブロック先頭)と列22(従業者数
+    # ブロック先頭)に現れる。位置決め打ちにし、ラベルが全産業であることだけ検証する。
+    idx_office, idx_emp = 1, 22
+    assert '全産業' in h2[idx_office] and '全産業' in h2[idx_emp], (h2[idx_office], h2[idx_emp])
+    print(f'T001162 列判定: 事業所数={idx_office}({h2[idx_office].strip()[:16]}) 従業者数={idx_emp}({h2[idx_emp].strip()[:16]})')
     sql("""DROP TABLE IF EXISTS mesh_biz;
 CREATE TABLE mesh_biz(key_code text PRIMARY KEY, offices int, employees int, geom geometry(Polygon,4326));""")
     n = 0
