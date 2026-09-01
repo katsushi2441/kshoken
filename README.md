@@ -25,6 +25,31 @@
 
 要件: docker / Python 3.10+ / メモリ4GB以上(Valhallaタイル構築時はさらに余裕を)。
 
+## AIエージェント（Claude Code）から商圏を引く
+
+同梱の `app/kshoken_mcp.py` を Claude Code や Claude Desktop に登録すると、
+**AIが商圏の質問に実データで答えられる**ようになります。
+「名古屋駅の徒歩10分圏の人口は？」「この2候補地の高齢者人口を比べて」が
+そのまま通ります。追加のインストールは不要です（標準ライブラリのみ）。
+
+```bash
+claude mcp add kshoken -- python3 /path/to/app/kshoken_mcp.py
+```
+
+Claude Desktop の場合は `claude_desktop_config.json` に:
+
+```json
+{"mcpServers":{"kshoken":{"command":"python3","args":["/path/to/app/kshoken_mcp.py"]}}}
+```
+
+| ツール | できること |
+|---|---|
+| `kshoken_analyze` | 住所・駅名 → 徒歩/車N分圏の人口・年齢構成・世帯・事業所数 |
+| `kshoken_health` | サービス稼働と収録メッシュ数の確認 |
+
+**読み取り専用です。** 分析APIを呼ぶだけで、データを書き換える口はありません。
+本体と別サーバーで使う場合は `KSHOKEN_API` に本体URLを設定してください。
+
 ## データ更新
 1. `scripts/download_mesh.sh` … e-Statから151区画×2統計のzipを /mnt/data/kshoken/mesh500 へ
 2. `python3 scripts/load_mesh.py` … PostGISへ投入(メッシュ矩形はコードから計算・境界ファイル不要)
