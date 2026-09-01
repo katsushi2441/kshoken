@@ -197,6 +197,7 @@ async function run(){
   map.fitBounds([[Math.min(...c.map(x=>x[0])),Math.min(...c.map(x=>x[1]))],
                  [Math.max(...c.map(x=>x[0])),Math.max(...c.map(x=>x[1]))]],{padding:44});
   if(window.innerWidth<860)document.getElementById('map').scrollIntoView({behavior:'smooth'});
+ syncUrl();
  }catch(e){st.textContent='通信エラー: '+e.message}
  finally{btn.disabled=false;btn.textContent='分析する'}
 }
@@ -204,4 +205,20 @@ document.getElementById('go').onclick=run;
 document.getElementById('q').addEventListener('keydown',e=>{if(e.key==='Enter')run()});
 document.getElementById('chips').addEventListener('click',e=>{
  if(e.target.classList.contains('chip')){document.getElementById('q').value=e.target.textContent;run()}});
+
+/* URLで結果を再現できるようにする。?q=名古屋駅&minutes=10&mode=walk で開くと自動で分析する。
+   分析後はURLも書き換えるので、その画面のまま人に渡せる（共有・ブックマーク・資料への貼り付け）。 */
+function syncUrl(){
+ const p=new URLSearchParams({q:document.getElementById('q').value.trim(),
+   minutes:document.getElementById('min').value, mode:document.getElementById('mode').value});
+ history.replaceState(null,'','?'+p.toString());
+}
+(function(){
+ const p=new URLSearchParams(location.search);
+ const q=p.get('q'); if(!q)return;
+ document.getElementById('q').value=q;
+ if(p.get('minutes'))document.getElementById('min').value=p.get('minutes');
+ if(p.get('mode'))document.getElementById('mode').value=p.get('mode');
+ run();
+})();
 </script></body></html>
