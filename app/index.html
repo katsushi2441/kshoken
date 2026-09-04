@@ -1,7 +1,13 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Kurage 商圏分析 — 住所ひとつで徒歩圏の人口・世帯・事業所がわかる</title>
-<meta name="description" content="住所を入れると、徒歩・車N分の到達圏（道路網ベース）の人口・年齢構成・世帯数・事業所数を国勢調査500mメッシュから算出します。無料でお試しいただけます。">
+<title>商圏分析ツールを無料で試す｜住所ひとつで徒歩圏の人口・世帯・事業所 — Kurage 商圏分析</title>
+<meta name="description" content="商圏分析を無料で試せるツール。住所を入れると徒歩・車N分の到達圏（道路網ベースのGIS）の人口・年齢構成・世帯数・事業所数を国勢調査500mメッシュから算出。買い切りで自社サーバーにも置けます。">
+<link rel="canonical" href="https://kurage.exbridge.jp/kshoken.php/">
+<meta property="og:title" content="商圏分析ツールを無料で試す｜Kurage 商圏分析">
+<meta property="og:description" content="住所ひとつで徒歩圏・車圏の人口・世帯・事業所を国勢調査500mメッシュから算出。無料お試し、買い切りで自社サーバーにも。">
+<meta property="og:url" content="https://kurage.exbridge.jp/kshoken.php/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://kurage.exbridge.jp/images/kurage_mascot_simple_v2.png">
 <link rel="icon" href="https://kurage.exbridge.jp/images/kurage_mascot_simple_v2.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -131,6 +137,20 @@ footer a{color:var(--aqua-dark)}
  © EXBRIDGE, Inc.（名古屋）
 </footer>
 
+<section id="about" style="max-width:960px;margin:40px auto 30px;padding:0 18px;line-height:1.9">
+<h2 style="font-size:20px">商圏分析とは？このツールで無料でできること</h2>
+<p>商圏分析とは、店舗や事業所の周りで「何人が、どんな年齢構成で、何世帯、どれだけの事業所があるか」を数えて、出店や営業エリアの判断に使うことです。このツールは<strong>住所を1つ入れるだけ</strong>で、徒歩・車の到達圏（円ではなく道路網ベース）を描き、国勢調査500mメッシュ（2020年）と経済センサス（2021年）から人口・年齢構成・世帯数・事業所数を算出します。お試しは無料で、結果はURLで共有できます。</p>
+<h3 style="font-size:17px">商圏分析のやり方（このツールでの3ステップ）</h3>
+<ol>
+<li>住所か駅名を入れて、徒歩／車と分数（5・10・15分など）を選ぶ</li>
+<li>「分析する」を押すと、道路網ベースの到達圏が地図に描かれ、圏内の人口・年齢構成・世帯・事業所が出る</li>
+<li>候補地を変えて比べる。URLをそのまま資料や共有に貼れる</li>
+</ol>
+<h3 style="font-size:17px">無料の商圏分析ツールとの違い</h3>
+<p>jSTAT MAP などの公的ツールでも商圏分析はできますが、操作に慣れが要ります。このツールは操作を「住所と分数」だけに絞り、到達圏を円ではなく道路網（OpenStreetMap＋Valhalla）で計算します。データは国が無償公開している e-Stat の地域メッシュ統計で、全国466,145メッシュの合計人口が国勢調査の総人口126,146,099人と一致することを確認しています。</p>
+<h3 style="font-size:17px">自社サーバーに置く（買い切り）</h3>
+<p>本体は MIT ライセンスのオープンソース（<a href="https://github.com/katsushi2441/kshoken">GitHub</a>）で、設置手順つきの買い切り版を <a href="https://kappstore.exbridge.jp/app.php?id=a5ac4b9f1fdb6d19&amp;ref=kshoken-lp">Kurage App Store</a> で販売しています。月額のデータ利用料はかかりません。作り方の記事: <a href="https://katsushi2441.github.io/vwork/blog/2026-09-01-kshoken-launch.html">商圏分析システムを1日で作った記録</a>／<a href="https://katsushi2441.github.io/vwork/blog/2026-09-01-shoken-bunseki-qgis-free.html">QGISと国勢調査メッシュで無料の商圏分析</a></p>
+</section>
 <script>
 const map=new maplibregl.Map({container:'map',center:[136.9,35.16],zoom:10.5,style:{version:8,
  sources:{gsi:{type:'raster',tiles:['https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png'],tileSize:256,
