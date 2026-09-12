@@ -9,7 +9,7 @@
 import json, os, time
 import psycopg2, requests
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse, Response
 
 PORT = int(os.environ.get("KSHOKEN_PORT", "18355"))
 VALHALLA = os.environ.get("KSHOKEN_VALHALLA", "http://127.0.0.1:18359")
@@ -126,3 +126,46 @@ def healthz():
 @app.get("/", response_class=HTMLResponse)
 def index():
     return open(os.path.join(os.path.dirname(__file__), "index.html"), encoding="utf-8").read()
+
+
+_LLMS_BODY = """# Kurage 商圏分析
+
+> 住所を入れると、その地点から徒歩圏（実際の道路を歩いた到達圏）の
+> 人口・世帯数・事業所数を返すサイト。出店や営業エリアの検討に使う。
+
+## 収録
+- 人口メッシュ: 466,145
+- 徒歩到達圏の計算: 実際の道路網にもとづく（直線距離の円ではない）
+- 出典: 国勢調査（総務省統計局）ほか
+
+## 大事な区別
+- 徒歩圏は**道路を歩いた到達圏**で求める。直線距離の円とは形が違う。
+- 統計は調査時点のもの。最新の実態とはずれる。
+
+## 使い方
+- 住所で調べる: https://kurage.exbridge.jp/kshoken.php/?q=<住所>
+
+## 関連
+- Kurage App Store: https://kappstore.exbridge.jp/
+
+運営: 株式会社エクスブリッジ https://exbridge.jp/
+"""
+
+# ---- AEO/GEO の標準セット（llms.txt / robots.txt / sitemap.xml）----
+# 他のKurage製品と同じ形にそろえる。AI検索に「何を答えるサイトか」を最初に渡す。
+@app.get("/robots.txt", response_class=PlainTextResponse)
+def _robots():
+    return "User-agent: *\nAllow: /\n\nSitemap: https://kurage.exbridge.jp/kshoken.php/sitemap.xml\n"
+
+
+@app.get("/sitemap.xml")
+def _sitemap():
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>'
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+           + '<url><loc>https://kurage.exbridge.jp/kshoken.php/</loc><changefreq>monthly</changefreq></url>' + '</urlset>')
+    return Response(content=xml, media_type="application/xml")
+
+
+@app.get("/llms.txt", response_class=PlainTextResponse)
+def _llms():
+    return _LLMS_BODY
