@@ -2,10 +2,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BP0650KDFR"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-BP0650KDFR');</script>
 <title>商圏分析ツールを無料で試す｜住所ひとつで徒歩圏の人口・世帯・事業所 — Kurage 商圏分析</title>
-<meta name="description" content="商圏分析を無料で試せるツール。住所を入れると徒歩・車N分の到達圏（道路網ベースのGIS）の人口・年齢構成・世帯数・事業所数を国勢調査500mメッシュから算出。買い切りで自社サーバーにも置けます。">
+<meta name="description" content="商圏分析を無料で試せるツール。住所を入れると徒歩・車N分の到達圏（道路網ベースのGIS）の人口・年齢構成・世帯数・事業所数を国勢調査500mメッシュから算出。オンプレミスで自社サーバーにも置けます。">
 <link rel="canonical" href="https://kurage.exbridge.jp/kshoken.php/">
 <meta property="og:title" content="商圏分析ツールを無料で試す｜Kurage 商圏分析">
-<meta property="og:description" content="住所ひとつで徒歩圏・車圏の人口・世帯・事業所を国勢調査500mメッシュから算出。無料お試し、買い切りで自社サーバーにも。">
+<meta property="og:description" content="住所ひとつで徒歩圏・車圏の人口・世帯・事業所を国勢調査500mメッシュから算出。無料お試し、オンプレミスで自社サーバーにも。">
 <meta property="og:url" content="https://kurage.exbridge.jp/kshoken.php/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://kurage.exbridge.jp/images/kurage_mascot_simple_v2.png">
@@ -86,7 +86,7 @@ footer a{color:var(--aqua-dark)}
  #map{height:46vh}
  .toplinks a:not(.cta){display:none}
 }
-</style><script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "商圏分析とは何ですか？", "acceptedAnswer": {"@type": "Answer", "text": "ある地点のまわりに、どれだけの人が住み、どれだけの事業所があるかを数えることです。出店の可否、営業エリアの設定、チラシを撒く範囲の判断などに使います。"}}, {"@type": "Question", "name": "徒歩圏はどうやって計算していますか？", "acceptedAnswer": {"@type": "Answer", "text": "実際の道路網を歩いた到達圏で求めています。地図上に円を描く方法とは形が変わります。線路や川で行き止まりになる方向は、円より狭くなります。"}}, {"@type": "Question", "name": "人口や事業所数のデータは何ですか？", "acceptedAnswer": {"@type": "Answer", "text": "国勢調査（総務省統計局）などの公的統計をメッシュ単位で収録しています。統計は調査時点のもので、最新の実態とはずれます。"}}, {"@type": "Question", "name": "この結果だけで出店を決めてよいですか？", "acceptedAnswer": {"@type": "Answer", "text": "いいえ。人口と事業所の数は判断材料の一つです。競合の有無、通行量、賃料、視認性などは別に調べる必要があります。"}}]}</script>
+</style><script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "商圏分析とは何ですか？", "acceptedAnswer": {"@type": "Answer", "text": "ある地点のまわりに、どれだけの人が住み、どれだけの事業所があるかを数えることです。出店の可否、営業エリアの設定、チラシを撒く範囲の判断などに使います。"}}, {"@type": "Question", "name": "徒歩圏はどうやって計算していますか？", "acceptedAnswer": {"@type": "Answer", "text": "実際の道路網を歩いた到達圏で求めています。地図上に円を描く方法とは形が変わります。線路や川で行き止まりになる方向は、円より狭くなります。"}}, {"@type": "Question", "name": "人口や事業所数のデータは何ですか？", "acceptedAnswer": {"@type": "Answer", "text": "国勢調査（総務省統計局）などの公的統計をメッシュ単位で収録しています。統計は調査時点のもので、最新の実態とはずれます。"}}, {"@type": "Question", "name": "この結果だけで出店を決めてよいですか？", "acceptedAnswer": {"@type": "Answer", "text": "いいえ。人口と事業所の数は判断材料の一つです。競合の有無、通行量、賃料、視認性などは別に調べる必要があります。"}}, {"@type": "Question", "name": "kepler.gl と何が違いますか？", "acceptedAnswer": {"@type": "Answer", "text": "kepler.gl は手元の位置データを地図に描く可視化ライブラリで、到達圏の計算や人口・事業所の集計は含まれません。このツールは住所と分数だけで道路網ベースの到達圏を出し、圏内の人口・年齢構成・世帯・事業所を国勢調査・経済センサスのメッシュ統計から集計します。データを持っていなくても使えるのが違いです。"}}]}</script>
 </head><body>
 <header class="topbar">
  <a class="brand" href="./" aria-label="Kurage 商圏分析（最初の画面に戻る）">
@@ -151,8 +151,21 @@ footer a{color:var(--aqua-dark)}
 <h3 style="font-size:17px">無料の商圏分析ツールとの違い</h3>
 <p>jSTAT MAP などの公的ツールでも商圏分析はできますが、操作に慣れが要ります。このツールは操作を「住所と分数」だけに絞り、到達圏を円ではなく道路網（OpenStreetMap＋Valhalla）で計算します。データは国が無償公開している e-Stat の地域メッシュ統計で、全国466,145メッシュの合計人口が国勢調査の総人口126,146,099人と一致することを確認しています。</p>
 <p>自分で組みたい方向けに、商圏分析に使えるオープンソース（到達圏の Valhalla・pgRouting、地図の QGIS、集計の PostGIS・H3 など）を実測つきで比較した一覧も公開しています: <a href="https://exbridge.jp/ai-system/c/shoken/?ref=kshoken-lp">商圏分析ツールのオープンソース一覧・比較</a></p>
-<h3 style="font-size:17px">自社サーバーに置く（買い切り）</h3>
-<p>本体は MIT ライセンスのオープンソース（<a href="https://github.com/katsushi2441/kshoken">GitHub</a>）で、設置手順つきの買い切り版を <a href="https://kappstore.exbridge.jp/app.php?id=a5ac4b9f1fdb6d19&amp;ref=kshoken-lp">Kurage App Store</a> で販売しています。月額のデータ利用料はかかりません。作り方の記事: <a href="https://katsushi2441.github.io/vwork/blog/2026-09-01-kshoken-launch.html">商圏分析システムを1日で作った記録</a>／<a href="https://katsushi2441.github.io/vwork/blog/2026-09-01-shoken-bunseki-qgis-free.html">QGISと国勢調査メッシュで無料の商圏分析</a></p>
+<h3 style="font-size:17px">kepler.gl との違い</h3>
+<p>kepler.gl（Uber 製・MIT）は、手元にあるデータを地図上に大量に描くための可視化ライブラリです。位置データを持っていて「見せ方」を作りたい人向けで、到達圏の計算や人口・事業所の集計は含まれません。このツールは逆に、データを持っていない人が「住所と分数」だけで到達圏と圏内の人口・年齢構成・世帯・事業所を出すところまでを1画面にしたものです。</p>
+<div style="overflow-x:auto"><table style="border-collapse:collapse;font-size:14px;min-width:560px">
+<thead><tr><th style="text-align:left;padding:6px 10px;border-bottom:2px solid #ddd">比べる点</th><th style="text-align:left;padding:6px 10px;border-bottom:2px solid #ddd">kepler.gl</th><th style="text-align:left;padding:6px 10px;border-bottom:2px solid #ddd">Kurage 商圏分析（このツール）</th></tr></thead>
+<tbody>
+<tr><td style="padding:6px 10px;border-bottom:1px solid #eee">何をするもの</td><td style="padding:6px 10px;border-bottom:1px solid #eee">位置データの可視化（点・線・ヒートマップ・時系列）</td><td style="padding:6px 10px;border-bottom:1px solid #eee">到達圏の計算と圏内の統計集計</td></tr>
+<tr><td style="padding:6px 10px;border-bottom:1px solid #eee">データ</td><td style="padding:6px 10px;border-bottom:1px solid #eee">自分で CSV / GeoJSON を用意する</td><td style="padding:6px 10px;border-bottom:1px solid #eee">国勢調査・経済センサスのメッシュ統計を内蔵</td></tr>
+<tr><td style="padding:6px 10px;border-bottom:1px solid #eee">到達圏（徒歩・車 N 分）</td><td style="padding:6px 10px;border-bottom:1px solid #eee">なし（別途 Valhalla 等が要る）</td><td style="padding:6px 10px;border-bottom:1px solid #eee">道路網ベースで計算</td></tr>
+<tr><td style="padding:6px 10px;border-bottom:1px solid #eee">人口・世帯・事業所の集計</td><td style="padding:6px 10px;border-bottom:1px solid #eee">なし</td><td style="padding:6px 10px;border-bottom:1px solid #eee">圏内を自動集計（年齢構成つき）</td></tr>
+<tr><td style="padding:6px 10px;border-bottom:1px solid #eee">向いている人</td><td style="padding:6px 10px;border-bottom:1px solid #eee">GIS に慣れていて自分のデータを見せたい</td><td style="padding:6px 10px;border-bottom:1px solid #eee">出店・営業エリアを数字で判断したい</td></tr>
+<tr><td style="padding:6px 10px;border-bottom:1px solid #eee">ライセンス</td><td style="padding:6px 10px;border-bottom:1px solid #eee">MIT</td><td style="padding:6px 10px;border-bottom:1px solid #eee">MIT（オンプレミス版あり）</td></tr>
+</tbody></table></div>
+<p>kepler.gl 自体の解説と日本語対応の実測は <a href="https://kurage.exbridge.jp/oss/kepler-gl/?ref=kshoken-lp">kepler.gl のページ</a> にまとめています。自分のデータを重ねて見せたい段階になったら、このツールの集計結果（URL で共有可）を kepler.gl に読み込む使い方もできます。</p>
+<h3 style="font-size:17px">自社サーバーに置く（オンプレミス）</h3>
+<p>本体は MIT ライセンスのオープンソース（<a href="https://github.com/katsushi2441/kshoken">GitHub</a>）で、設置手順つきのオンプレミス版を <a href="https://kappstore.exbridge.jp/app.php?id=a5ac4b9f1fdb6d19&amp;ref=kshoken-lp">Kurage App Store</a> で販売しています。月額のデータ利用料はかかりません。作り方の記事: <a href="https://katsushi2441.github.io/vwork/blog/2026-09-01-kshoken-launch.html">商圏分析システムを1日で作った記録</a>／<a href="https://katsushi2441.github.io/vwork/blog/2026-09-01-shoken-bunseki-qgis-free.html">QGISと国勢調査メッシュで無料の商圏分析</a></p>
 </section>
 <script>
 const map=new maplibregl.Map({container:'map',center:[136.9,35.16],zoom:10.5,style:{version:8,
