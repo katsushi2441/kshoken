@@ -158,11 +158,27 @@ def _robots():
     return "User-agent: *\nAllow: /\n\nSitemap: https://kurage.exbridge.jp/kshoken.php/sitemap.xml\n"
 
 
+
+def _lastmod():
+    """サイトマップの lastmod。**このファイルの更新日**を使う。
+
+    ページの中身が変わるのはコードかデータが変わったときなので、毎回 now を入れない
+    （「いつも更新されている」ことになって、かえって無視される）。
+    2026-09-22 実測: Google が取りに来ていた子サイトマップは lastmod のあるものだけだった。
+    """
+    import datetime as _d
+    import os as _o
+    return _d.datetime.fromtimestamp(_o.path.getmtime(_o.path.abspath(__file__))).strftime("%Y-%m-%d")
+
+
+_LASTMOD = _lastmod()
+
+
 @app.get("/sitemap.xml")
 def _sitemap():
     xml = ('<?xml version="1.0" encoding="UTF-8"?>'
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
-           + '<url><loc>https://kurage.exbridge.jp/kshoken.php/</loc><changefreq>monthly</changefreq></url>' + '</urlset>')
+           + '<url><loc>https://kurage.exbridge.jp/kshoken.php/</loc><lastmod>' + _LASTMOD + '</lastmod><changefreq>monthly</changefreq></url>' + '</urlset>')
     return Response(content=xml, media_type="application/xml")
 
 
